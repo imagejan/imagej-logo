@@ -1,3 +1,9 @@
+#@ Double (label = "Tube thickness (in percent)", min = 2, max = 20, stepSize=0.5, value = 12) tubeThickness
+#@ Double (label = "Letter distance (in percent)", min = 1, max = 10, stepSize=0.5, value = 5) letterDistance
+#@ Double (label = "Outer radius of J (in percent)", min = 10, max = 30, stepSize=0.5, value = 21) jRadius
+#@ Double (label = "Frame weight (in percent)", min = 0.1, max = 5, stepSize=0.1, value = 0.1) frameWeight
+#@ Integer (label = "Output size (in pixels)", value = 256) outputSize
+
 #@OUTPUT img
 import net.imglib2.roi.Masks
 import net.imglib2.roi.geom.GeomMasks
@@ -8,13 +14,6 @@ import net.imglib2.view.Views
 import net.imglib2.FinalInterval
 
 import net.imglib2.realtransform.AffineTransform2D
-
-
-tubeThickness = 12
-letterDistance = 5
-jRadius = 21
-outputSize = 256
-frameWeight = 0.1
 
 // required for rasterizing
 // to avoid misalignment between J stem and bottom
