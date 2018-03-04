@@ -3,8 +3,11 @@
 #@ Double (label = "Outer radius of J (in percent)", min = 10, max = 30, stepSize=0.5, value = 21) jRadius
 #@ Double (label = "Frame weight (in percent)", min = 0.1, max = 5, stepSize=0.1, value = 0.1) frameWeight
 #@ Integer (label = "Output size (in pixels)", value = 256) outputSize
-
+#@ Boolean (label = "Draw I", value = true) drawI
+#@ Boolean (label = "Draw J", value = true) drawJ
+#@ Boolean (label = "Draw slide", value = true) drawSlide
 #@OUTPUT img
+
 import net.imglib2.roi.Masks
 import net.imglib2.roi.geom.GeomMasks
 //import bdv.util.Bdv
@@ -51,7 +54,10 @@ frame  = frame1.minus(frame2)
 
 /* Combine mask */
 
-logoRoi = I.or(J).or(slide).or(frame)
+logoRoi = frame
+if (drawI) logoRoi = logoRoi.or(I)
+if (drawJ) logoRoi = logoRoi.or(J)
+if (drawSlide) logoRoi = logoRoi.or(slide)
 
 /* Translate and scale ROI */
 
