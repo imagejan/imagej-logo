@@ -22,8 +22,8 @@ offset = -0.5
 
 // derived and fixed values
 xI = 50 - jRadius
-yI = 10
-hI = 50
+yI = 15
+hI = 40
 bottomJ = 90
 
 xJbar = xI + tubeThickness + letterDistance
