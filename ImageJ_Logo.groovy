@@ -1,37 +1,72 @@
 #@OUTPUT img
 import net.imglib2.roi.Masks
 import net.imglib2.roi.geom.GeomMasks
-import bdv.util.Bdv
-import bdv.util.BdvFunctions
+//import bdv.util.Bdv
+//import bdv.util.BdvFunctions
 import net.imglib2.FinalInterval
 import net.imglib2.view.Views
 import net.imglib2.FinalInterval
 
+import net.imglib2.realtransform.AffineTransform2D
 
-I = GeomMasks.closedWritableBox([30.5, 10.5] as double[], [40.5, 60.5] as double[])
 
-Jbar      = GeomMasks.closedWritableBox([45.5, 30.5] as double[], [70.5, 40.5] as double[])
-Jstem     = GeomMasks.closedWritableBox([60.5, 30.5] as double[], [70.5, 70.5] as double[])
-Jouter    = GeomMasks.openWritableSphere([50.5, 70.5] as double[], 20.0)
-Jinner    = GeomMasks.closedWritableSphere([50.5, 70.5] as double[], 10.0)
-Jclipping = GeomMasks.openWritableBox([ 0.5, 70.5] as double[], [100.5, 100.5] as double[])
+tubeThickness = 12
+letterDistance = 5
+jRadius = 21
+outputSize = 256
+frameWeight = 0.1
+
+// required for rasterizing
+// to avoid misalignment between J stem and bottom
+offset = -0.5
+
+// derived and fixed values
+xI = 50 - jRadius
+yI = 10
+hI = 50
+bottomJ = 90
+
+xJbar = xI + tubeThickness + letterDistance
+yJbar = 30
+xJstem = 50 + jRadius - tubeThickness
+yJcenter = bottomJ - jRadius
+
+
+I = GeomMasks.closedWritableBox([xI, yI] as double[], [xI + tubeThickness, yI + hI] as double[])
+
+Jbar      = GeomMasks.closedWritableBox([xJbar, yJbar] as double[], [50 + jRadius, yJbar + tubeThickness] as double[])
+Jstem     = GeomMasks.closedWritableBox([xJstem, yJbar] as double[], [50 + jRadius, yJcenter] as double[])
+Jouter    = GeomMasks.openWritableSphere([50, yJcenter] as double[], jRadius)
+Jinner    = GeomMasks.closedWritableSphere([50, yJcenter] as double[], jRadius - tubeThickness)
+Jclipping = GeomMasks.openWritableBox([ 0, yJcenter] as double[], [100, 100] as double[])
 
 J = Jouter.minus(Jinner).and(Jclipping).or(Jbar).or(Jstem)
 
-slide  = GeomMasks.closedWritableBox([25.5, 66.5] as double[], [45.5, 68.5] as double[])
+slide  = GeomMasks.closedWritableBox([xI - letterDistance, yJcenter - 4] as double[], [xJbar, yJcenter - 3] as double[])
 
 /* Create frame */
 
-frame1 = GeomMasks.closedWritableBox([ 0.5,  0.5] as double[], [100.5, 100.5] as double[])
-frame2 = GeomMasks.closedWritableBox([ 1.5,  1.5] as double[], [99.5, 99.5] as double[])
+frame1 = GeomMasks.closedWritableBox([ 0,  0] as double[], [100, 100] as double[])
+frame2 = GeomMasks.closedWritableBox([ frameWeight,  frameWeight] as double[], [100 - frameWeight, 100 - frameWeight] as double[])
 frame  = frame1.minus(frame2)
 
 /* Combine mask */
 
-mask = Masks.toRealRandomAccessibleRealInterval(I.or(J).or(slide).or(frame))
+logoRoi = I.or(J).or(slide).or(frame)
+
+/* Translate and scale ROI */
+
+transform = new AffineTransform2D()
+transform.scale(outputSize / 100)
+transform.translate(offset, offset)
+
+transformedRoi = logoRoi.transform(transform.inverse()) // why inverse?
+
+mask = Masks.toRealRandomAccessibleRealInterval(transformedRoi)
 
 /* Show combined mask in BigDataViewer */
 
+/*
 BdvFunctions.show(
 				mask,
 				new FinalInterval(
@@ -39,6 +74,7 @@ BdvFunctions.show(
 						[mask.realMax( 0 ), mask.realMax( 1 ) ] as long[] ),
 				"2D Mask",
 				Bdv.options() )
+*/
 
 /* Use Imglib2 Views to raster the mask */
 
