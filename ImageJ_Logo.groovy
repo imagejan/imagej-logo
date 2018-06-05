@@ -34,22 +34,22 @@ xJstem = 50 + jRadius - tubeThickness
 yJcenter = bottomJ - jRadius
 
 
-I = GeomMasks.closedWritableBox([xI, yI] as double[], [xI + tubeThickness, yI + hI] as double[])
+I = GeomMasks.closedBox([xI, yI] as double[], [xI + tubeThickness, yI + hI] as double[])
 
-Jbar      = GeomMasks.closedWritableBox([xJbar, yJbar] as double[], [50 + jRadius, yJbar + tubeThickness] as double[])
-Jstem     = GeomMasks.closedWritableBox([xJstem, yJbar] as double[], [50 + jRadius, yJcenter] as double[])
-Jouter    = GeomMasks.openWritableSphere([50, yJcenter] as double[], jRadius)
-Jinner    = GeomMasks.closedWritableSphere([50, yJcenter] as double[], jRadius - tubeThickness)
-Jclipping = GeomMasks.openWritableBox([ 0, yJcenter] as double[], [100, 100] as double[])
+Jbar      = GeomMasks.closedBox([xJbar, yJbar] as double[], [50 + jRadius, yJbar + tubeThickness] as double[])
+Jstem     = GeomMasks.closedBox([xJstem, yJbar] as double[], [50 + jRadius, yJcenter] as double[])
+Jouter    = GeomMasks.openSphere([50, yJcenter] as double[], jRadius)
+Jinner    = GeomMasks.closedSphere([50, yJcenter] as double[], jRadius - tubeThickness)
+Jclipping = GeomMasks.openBox([ 0, yJcenter] as double[], [100, 100] as double[])
 
 J = Jouter.minus(Jinner).and(Jclipping).or(Jbar).or(Jstem)
 
-slide  = GeomMasks.closedWritableBox([xI - letterDistance, yJcenter - 4] as double[], [xJbar, yJcenter - 3] as double[])
+slide  = GeomMasks.closedBox([xI - letterDistance, yJcenter - 4] as double[], [xJbar, yJcenter - 3] as double[])
 
 /* Create frame */
 
-frame1 = GeomMasks.closedWritableBox([ 0,  0] as double[], [100, 100] as double[])
-frame2 = GeomMasks.closedWritableBox([ frameWeight,  frameWeight] as double[], [100 - frameWeight, 100 - frameWeight] as double[])
+frame1 = GeomMasks.closedBox([ 0,  0] as double[], [100, 100] as double[])
+frame2 = GeomMasks.closedBox([ frameWeight,  frameWeight] as double[], [100 - frameWeight, 100 - frameWeight] as double[])
 frame  = frame1.minus(frame2)
 
 /* Combine mask */
